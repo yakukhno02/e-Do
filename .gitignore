@@ -1,3 +1,5 @@
 .idea
 skills
 .DS_Store
+.env
+*.env
