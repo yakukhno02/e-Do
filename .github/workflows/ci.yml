@@ -11,21 +11,6 @@ jobs:
     name: Backend Test & Build
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: edo_db
-          POSTGRES_USER: edo_user
-          POSTGRES_PASSWORD: edo_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -43,13 +28,6 @@ jobs:
       - name: Run Backend Tests
         run: ./gradlew test --no-daemon
         working-directory: backend
-        env:
-          SPRING_PROFILES_ACTIVE: test
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/edo_db
-          SPRING_DATASOURCE_USERNAME: edo_user
-          SPRING_DATASOURCE_PASSWORD: edo_password
-          JWT_SECRET: ci_test_secret_key_ci_test_secret_key_ci_test_secret_key_12345
-          JWT_EXPIRATION_MS: 86400000
 
       - name: Build Executable Boot Jar
         run: ./gradlew bootJar -x test --no-daemon
