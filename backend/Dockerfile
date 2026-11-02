@@ -17,6 +17,7 @@ RUN ./gradlew dependencies --no-daemon || true
 # Copy source code and build executable jar
 COPY src src
 RUN ./gradlew bootJar -x test --no-daemon
+RUN cp $(ls build/libs/*.jar | grep -v plain | head -n 1) app.jar
 
 # Stage 2: Runtime image
 FROM eclipse-temurin:21-jre-alpine
@@ -28,7 +29,7 @@ RUN addgroup -S edo && adduser -S edo -G edo
 USER edo
 
 # Copy built JAR from builder
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /app/app.jar app.jar
 
 EXPOSE 8080
 
