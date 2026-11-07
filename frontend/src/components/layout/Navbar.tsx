@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { CheckSquare, Clock, LogOut, Menu, User, Users, X } from 'lucide-react';
+import {
+  BarChart2,
+  CheckSquare,
+  Clock,
+  LogOut,
+  Menu,
+  ShieldAlert,
+  User,
+  Users,
+  X,
+} from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../common/Button';
 
@@ -19,7 +29,17 @@ export const Navbar: React.FC = () => {
     { to: '/tasks', label: 'Завдання', icon: <CheckSquare className="w-4 h-4" /> },
     { to: '/pomodoro', label: 'Pomodoro', icon: <Clock className="w-4 h-4" /> },
     { to: '/rooms', label: 'Кімнати', icon: <Users className="w-4 h-4" /> },
+    { to: '/stats', label: 'Статистика', icon: <BarChart2 className="w-4 h-4" /> },
+    { to: '/profile', label: 'Профіль', icon: <User className="w-4 h-4" /> },
   ];
+
+  if (user?.role === 'ADMIN') {
+    navLinks.push({
+      to: '/admin',
+      label: 'Адмінка',
+      icon: <ShieldAlert className="w-4 h-4 text-rose-500" />,
+    });
+  }
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-2xs">
@@ -45,9 +65,9 @@ export const Navbar: React.FC = () => {
                     <Link
                       key={link.to}
                       to={link.to}
-                      className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${
                         isActive
-                          ? 'bg-indigo-50 text-indigo-700'
+                          ? 'bg-indigo-50 text-indigo-700 font-bold'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                       }`}
                     >
@@ -64,9 +84,13 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-xl transition-colors cursor-pointer"
+                  title="Перейти в профіль"
+                >
                   <div className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">
-                    <User className="w-4 h-4" />
+                    {user?.name?.charAt(0) || <User className="w-4 h-4" />}
                   </div>
                   <div className="text-left">
                     <p className="text-xs font-bold text-slate-800 leading-tight">
@@ -76,7 +100,7 @@ export const Navbar: React.FC = () => {
                       @{user?.username} {user?.role === 'ADMIN' && '· Admin'}
                     </p>
                   </div>
-                </div>
+                </Link>
 
                 <Button
                   variant="ghost"
@@ -123,15 +147,21 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden border-t border-slate-200 bg-white px-4 pt-3 pb-5 space-y-3 shadow-lg">
           {isAuthenticated ? (
             <>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200/80">
+              <Link
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200/80 hover:bg-slate-100 transition-colors"
+              >
                 <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                   {user?.name?.charAt(0) || 'U'}
                 </div>
                 <div>
                   <div className="text-sm font-bold text-slate-800">{user?.name}</div>
-                  <div className="text-xs text-slate-500">@{user?.username} · {user?.email}</div>
+                  <div className="text-xs text-slate-500">
+                    @{user?.username} · {user?.email} {user?.role === 'ADMIN' && '(ADMIN)'}
+                  </div>
                 </div>
-              </div>
+              </Link>
 
               <div className="space-y-1">
                 {navLinks.map((link) => (
