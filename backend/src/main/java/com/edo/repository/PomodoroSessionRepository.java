@@ -3,6 +3,8 @@ package com.edo.repository;
 import com.edo.entity.PomodoroSession;
 import com.edo.enums.PomodoroSessionStatus;
 import com.edo.enums.PomodoroSessionType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +20,7 @@ public interface PomodoroSessionRepository extends JpaRepository<PomodoroSession
     Optional<PomodoroSession> findByIdAndUserId(UUID id, UUID userId);
     Optional<PomodoroSession> findByUserIdAndStatus(UUID userId, PomodoroSessionStatus status);
     List<PomodoroSession> findAllByUserIdOrderByStartTimeDesc(UUID userId);
+    Page<PomodoroSession> findAllByUserId(UUID userId, Pageable pageable);
     long countByUserIdAndStatus(UUID userId, PomodoroSessionStatus status);
     long countByUserIdAndTypeAndStatus(UUID userId, PomodoroSessionType type, PomodoroSessionStatus status);
 
