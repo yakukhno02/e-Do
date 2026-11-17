@@ -20,6 +20,11 @@
       "key": "taskId",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "sessionId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -428,6 +433,132 @@
               "raw": "{{baseUrl}}/tasks/{{taskId}}",
               "host": ["{{baseUrl}}"],
               "path": ["tasks", "{{taskId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pomodoro",
+      "item": [
+        {
+          "name": "Start Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var data = pm.response.json();",
+                  "    if (data.sessionId) {",
+                  "        pm.collectionVariables.set('sessionId', data.sessionId);",
+                  "        console.log('Saved sessionId to collection variable: sessionId');",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"durationMinutes\": 25,\n  \"breakDurationMinutes\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pomodoro/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["pomodoro", "start"]
+            }
+          }
+        },
+        {
+          "name": "Complete Session",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["pomodoro", "{{sessionId}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Session",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["pomodoro", "{{sessionId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Get Session History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/pomodoro/sessions?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["pomodoro", "sessions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                }
+              ]
             }
           }
         }
