@@ -12,9 +12,12 @@ import com.edo.enums.PomodoroSessionType;
 import com.edo.repository.PasswordResetTokenRepository;
 import com.edo.repository.PomodoroSessionRepository;
 import com.edo.repository.ProductivityGoalRepository;
+import com.edo.repository.RoomParticipantRepository;
+import com.edo.repository.RoomRepository;
 import com.edo.repository.TaskRepository;
 import com.edo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,15 +63,17 @@ class UserControllerTest {
     @Autowired
     private ProductivityGoalRepository goalRepository;
 
+    @Autowired
+    private RoomParticipantRepository roomParticipantRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
     private String token;
 
     @BeforeEach
     void setUp() throws Exception {
-        sessionRepository.deleteAll();
-        goalRepository.deleteAll();
-        taskRepository.deleteAll();
-        resetTokenRepository.deleteAll();
-        userRepository.deleteAll();
+        cleanDatabase();
 
         RegisterRequest firstUser = new RegisterRequest(
                 "Jane Doe",
@@ -95,6 +100,21 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(secondUser)))
                 .andExpect(status().isCreated());
+    }
+
+    @AfterEach
+    void tearDown() {
+        cleanDatabase();
+    }
+
+    private void cleanDatabase() {
+        sessionRepository.deleteAll();
+        roomParticipantRepository.deleteAll();
+        roomRepository.deleteAll();
+        goalRepository.deleteAll();
+        taskRepository.deleteAll();
+        resetTokenRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test

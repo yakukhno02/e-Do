@@ -2,6 +2,8 @@ package com.edo.repository;
 
 import com.edo.entity.RoomParticipant;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,5 +15,9 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
     Optional<RoomParticipant> findByRoomIdAndUserId(UUID roomId, UUID userId);
     boolean existsByRoomIdAndUserId(UUID roomId, UUID userId);
     List<RoomParticipant> findAllByRoomId(UUID roomId);
+
+    @Query("SELECT rp FROM RoomParticipant rp JOIN FETCH rp.user WHERE rp.room.id = :roomId ORDER BY rp.joinedAt ASC, rp.user.id ASC")
+    List<RoomParticipant> findAllByRoomIdWithUserOrdered(@Param("roomId") UUID roomId);
+
     void deleteByRoomIdAndUserId(UUID roomId, UUID userId);
 }
