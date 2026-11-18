@@ -74,8 +74,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           }
         },
@@ -112,8 +117,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -133,8 +143,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/forgot-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "forgot-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
             }
           }
         },
@@ -154,8 +169,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/reset-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "reset-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
             }
           }
         },
@@ -175,8 +195,13 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
             }
           }
         }
@@ -201,8 +226,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
             }
           }
         },
@@ -232,8 +262,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/users/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["users", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
             }
           }
         }
@@ -258,8 +293,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/tasks",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
             }
           }
         },
@@ -279,8 +318,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/tasks?status=TODO&priority=HIGH",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ],
               "query": [
                 {
                   "key": "status",
@@ -337,8 +380,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tasks",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
             }
           }
         },
@@ -358,8 +405,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/tasks/{{taskId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks", "{{taskId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
             }
           }
         },
@@ -389,8 +441,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tasks/{{taskId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks", "{{taskId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
             }
           }
         },
@@ -420,8 +477,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tasks/{{taskId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks", "{{taskId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}",
+                "status"
+              ]
             }
           }
         },
@@ -441,8 +504,13 @@
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/tasks/{{taskId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["tasks", "{{taskId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
             }
           }
         }
@@ -494,8 +562,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/pomodoro/start",
-              "host": ["{{baseUrl}}"],
-              "path": ["pomodoro", "start"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pomodoro",
+                "start"
+              ]
             }
           }
         },
@@ -515,8 +588,14 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/complete",
-              "host": ["{{baseUrl}}"],
-              "path": ["pomodoro", "{{sessionId}}", "complete"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pomodoro",
+                "{{sessionId}}",
+                "complete"
+              ]
             }
           }
         },
@@ -536,8 +615,14 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/cancel",
-              "host": ["{{baseUrl}}"],
-              "path": ["pomodoro", "{{sessionId}}", "cancel"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pomodoro",
+                "{{sessionId}}",
+                "cancel"
+              ]
             }
           }
         },
@@ -557,8 +642,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/pomodoro/sessions?page=0&size=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["pomodoro", "sessions"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pomodoro",
+                "sessions"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -624,8 +714,12 @@
             },
             "url": {
               "raw": "{{baseUrl}}/rooms",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms"
+              ]
             }
           }
         },
@@ -655,8 +749,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/rooms/join",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms", "join"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "join"
+              ]
             }
           }
         },
@@ -676,8 +775,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/rooms/{{roomId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms", "{{roomId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{roomId}}"
+              ]
             }
           }
         },
@@ -697,8 +801,14 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/rooms/{{roomId}}/start",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms", "{{roomId}}", "start"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{roomId}}",
+                "start"
+              ]
             }
           }
         },
@@ -718,8 +828,14 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/rooms/{{roomId}}/stop",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms", "{{roomId}}", "stop"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{roomId}}",
+                "stop"
+              ]
             }
           }
         },
@@ -739,8 +855,120 @@
             "method": "POST",
             "url": {
               "raw": "{{baseUrl}}/rooms/{{roomId}}/leave",
-              "host": ["{{baseUrl}}"],
-              "path": ["rooms", "{{roomId}}", "leave"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rooms",
+                "{{roomId}}",
+                "leave"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Summary",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/statistics/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "statistics",
+                "summary"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Goals",
+      "item": [
+        {
+          "name": "Upsert Goal (Daily Pomodoro Count)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"period\": \"DAILY\",\n  \"type\": \"POMODORO_COUNT\",\n  \"targetValue\": 8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/goals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upsert Goal (Weekly Focus Minutes)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"period\": \"WEEKLY\",\n  \"type\": \"FOCUS_MINUTES\",\n  \"targetValue\": 2400\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/goals",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "goals"
+              ]
             }
           }
         }
