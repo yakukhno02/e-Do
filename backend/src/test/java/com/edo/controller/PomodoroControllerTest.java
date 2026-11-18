@@ -9,9 +9,12 @@ import com.edo.enums.PomodoroSessionType;
 import com.edo.repository.PasswordResetTokenRepository;
 import com.edo.repository.PomodoroSessionRepository;
 import com.edo.repository.ProductivityGoalRepository;
+import com.edo.repository.RoomParticipantRepository;
+import com.edo.repository.RoomRepository;
 import com.edo.repository.TaskRepository;
 import com.edo.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +60,12 @@ class PomodoroControllerTest {
     @Autowired
     private ProductivityGoalRepository goalRepository;
 
+    @Autowired
+    private RoomParticipantRepository roomParticipantRepository;
+
+    @Autowired
+    private RoomRepository roomRepository;
+
     private String user1Token;
     private String user2Token;
     private User user1;
@@ -64,11 +73,7 @@ class PomodoroControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        sessionRepository.deleteAll();
-        goalRepository.deleteAll();
-        taskRepository.deleteAll();
-        resetTokenRepository.deleteAll();
-        userRepository.deleteAll();
+        cleanDatabase();
 
         RegisterRequest firstUser = new RegisterRequest(
                 "Jane Doe",
@@ -99,6 +104,21 @@ class PomodoroControllerTest {
                 .andReturn().getResponse().getContentAsString();
         user2Token = objectMapper.readTree(res2).get("token").asText();
         user2 = userRepository.findByEmail("john@example.com").orElseThrow();
+    }
+
+    @AfterEach
+    void tearDown() {
+        cleanDatabase();
+    }
+
+    private void cleanDatabase() {
+        sessionRepository.deleteAll();
+        roomParticipantRepository.deleteAll();
+        roomRepository.deleteAll();
+        goalRepository.deleteAll();
+        taskRepository.deleteAll();
+        resetTokenRepository.deleteAll();
+        userRepository.deleteAll();
     }
 
     @Test
