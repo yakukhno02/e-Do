@@ -21,6 +21,7 @@ public interface PomodoroSessionRepository extends JpaRepository<PomodoroSession
     Optional<PomodoroSession> findByUserIdAndStatus(UUID userId, PomodoroSessionStatus status);
     List<PomodoroSession> findAllByUserIdOrderByStartTimeDesc(UUID userId);
     Page<PomodoroSession> findAllByUserId(UUID userId, Pageable pageable);
+    List<PomodoroSession> findAllByRoomIdAndStatus(UUID roomId, PomodoroSessionStatus status);
     long countByUserIdAndStatus(UUID userId, PomodoroSessionStatus status);
     long countByUserIdAndTypeAndStatus(UUID userId, PomodoroSessionType type, PomodoroSessionStatus status);
 
