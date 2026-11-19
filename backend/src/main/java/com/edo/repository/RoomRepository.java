@@ -15,4 +15,6 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
     Optional<Room> findByCode(String code);
     boolean existsByCode(String code);
     List<Room> findAllByStatusIn(Collection<RoomStatus> statuses);
+    List<Room> findAllByCreatorId(UUID creatorId);
+    void deleteAllByCreatorId(UUID creatorId);
 }

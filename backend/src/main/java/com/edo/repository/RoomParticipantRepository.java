@@ -15,9 +15,11 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
     Optional<RoomParticipant> findByRoomIdAndUserId(UUID roomId, UUID userId);
     boolean existsByRoomIdAndUserId(UUID roomId, UUID userId);
     List<RoomParticipant> findAllByRoomId(UUID roomId);
+    int countByRoomId(UUID roomId);
 
     @Query("SELECT rp FROM RoomParticipant rp JOIN FETCH rp.user WHERE rp.room.id = :roomId ORDER BY rp.joinedAt ASC, rp.user.id ASC")
     List<RoomParticipant> findAllByRoomIdWithUserOrdered(@Param("roomId") UUID roomId);
 
     void deleteByRoomIdAndUserId(UUID roomId, UUID userId);
+    void deleteAllByUserId(UUID userId);
 }
