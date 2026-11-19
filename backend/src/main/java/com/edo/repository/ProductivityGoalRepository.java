@@ -15,4 +15,5 @@ public interface ProductivityGoalRepository extends JpaRepository<ProductivityGo
     Optional<ProductivityGoal> findByIdAndUserId(UUID id, UUID userId);
     Optional<ProductivityGoal> findByUserIdAndPeriodAndType(UUID userId, GoalPeriod period, GoalType type);
     List<ProductivityGoal> findAllByUserId(UUID userId);
+    void deleteAllByUserId(UUID userId);
 }

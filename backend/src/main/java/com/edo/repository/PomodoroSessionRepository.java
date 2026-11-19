@@ -6,6 +6,7 @@ import com.edo.enums.PomodoroSessionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -33,4 +34,10 @@ public interface PomodoroSessionRepository extends JpaRepository<PomodoroSession
 
     @Query("SELECT COALESCE(SUM(s.durationMinutes), 0) FROM PomodoroSession s WHERE s.user.id = :userId AND s.status = 'COMPLETED' AND s.endTime >= :startTime AND s.endTime < :endTime")
     long sumMinutesInPeriod(@Param("userId") UUID userId, @Param("startTime") Instant startTime, @Param("endTime") Instant endTime);
+
+    void deleteAllByUserId(UUID userId);
+
+    @Modifying
+    @Query("UPDATE PomodoroSession s SET s.room = null WHERE s.room.id = :roomId")
+    void setRoomNullByRoomId(@Param("roomId") UUID roomId);
 }
