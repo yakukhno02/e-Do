@@ -23,9 +23,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.Instant;
 import java.util.List;
@@ -58,7 +58,9 @@ class RoomServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
+
     private RoomServiceImpl roomService;
 
     private User creator;
@@ -83,6 +85,14 @@ class RoomServiceImplTest {
         testRoom = new Room(VALID_CODE, "Group Study", creator, 25, 5);
         testRoom.setId(roomId);
         testRoom.setStatus(RoomStatus.WAITING);
+
+        roomService = new RoomServiceImpl(
+                roomRepository,
+                roomParticipantRepository,
+                sessionRepository,
+                userRepository,
+                Optional.of(messagingTemplate)
+        );
     }
 
     @Test
@@ -109,6 +119,7 @@ class RoomServiceImplTest {
         assertEquals("Group Study", response.getName());
         assertEquals(creatorId, response.getCreatorId());
         verify(roomParticipantRepository).save(any(RoomParticipant.class));
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/" + roomId), any(Object.class));
     }
 
     @Test
@@ -128,6 +139,7 @@ class RoomServiceImplTest {
 
         assertNotNull(response);
         verify(roomParticipantRepository).save(any(RoomParticipant.class));
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/" + roomId), any(Object.class));
     }
 
     @Test
@@ -177,6 +189,7 @@ class RoomServiceImplTest {
 
         assertEquals(RoomStatus.ACTIVE, testRoom.getStatus());
         verify(sessionRepository, times(2)).save(any(PomodoroSession.class));
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/" + roomId), any(Object.class));
         assertNotNull(response);
     }
 
@@ -227,5 +240,6 @@ class RoomServiceImplTest {
 
         assertEquals(participantUser, testRoom.getCreator());
         verify(roomRepository).save(testRoom);
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/" + roomId), any(Object.class));
     }
 }
