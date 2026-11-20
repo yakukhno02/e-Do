@@ -5,6 +5,7 @@ import com.edo.dto.request.RoomJoinRequest;
 import com.edo.dto.response.MessageResponse;
 import com.edo.dto.response.RoomDetailsResponse;
 import com.edo.dto.response.RoomParticipantResponse;
+import com.edo.dto.websocket.RoomUpdatedEvent;
 import com.edo.entity.PomodoroSession;
 import com.edo.entity.Room;
 import com.edo.entity.RoomParticipant;
@@ -20,6 +21,7 @@ import com.edo.repository.RoomParticipantRepository;
 import com.edo.repository.RoomRepository;
 import com.edo.repository.UserRepository;
 import com.edo.service.RoomService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,15 +45,18 @@ public class RoomServiceImpl implements RoomService {
     private final RoomParticipantRepository roomParticipantRepository;
     private final PomodoroSessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final Optional<SimpMessagingTemplate> messagingTemplate;
 
     public RoomServiceImpl(RoomRepository roomRepository,
                            RoomParticipantRepository roomParticipantRepository,
                            PomodoroSessionRepository sessionRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           Optional<SimpMessagingTemplate> messagingTemplate) {
         this.roomRepository = roomRepository;
         this.roomParticipantRepository = roomParticipantRepository;
         this.sessionRepository = sessionRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -69,8 +74,6 @@ public class RoomServiceImpl implements RoomService {
                 request.getPomodoroDuration(),
                 request.getBreakDuration()
         );
-        room.setStatus(RoomStatus.WAITING);
-        room.setStateVersion(0L);
 
         Room savedRoom = roomRepository.save(room);
 
@@ -78,7 +81,9 @@ public class RoomServiceImpl implements RoomService {
         RoomParticipant creatorParticipant = new RoomParticipant(savedRoom, creator);
         roomParticipantRepository.save(creatorParticipant);
 
-        return toRoomDetailsResponse(savedRoom);
+        RoomDetailsResponse response = toRoomDetailsResponse(savedRoom);
+        publishRoomUpdatedEvent(response);
+        return response;
     }
 
     @Override
@@ -116,7 +121,9 @@ public class RoomServiceImpl implements RoomService {
             room = roomRepository.save(room);
         }
 
-        return toRoomDetailsResponse(room);
+        RoomDetailsResponse response = toRoomDetailsResponse(room);
+        publishRoomUpdatedEvent(response);
+        return response;
     }
 
     @Override
@@ -183,7 +190,9 @@ public class RoomServiceImpl implements RoomService {
             sessionRepository.save(session);
         }
 
-        return toRoomDetailsResponse(savedRoom);
+        RoomDetailsResponse response = toRoomDetailsResponse(savedRoom);
+        publishRoomUpdatedEvent(response);
+        return response;
     }
 
     @Override
@@ -216,7 +225,9 @@ public class RoomServiceImpl implements RoomService {
         room.setStateVersion(room.getStateVersion() + 1);
         Room savedRoom = roomRepository.save(room);
 
-        return toRoomDetailsResponse(savedRoom);
+        RoomDetailsResponse response = toRoomDetailsResponse(savedRoom);
+        publishRoomUpdatedEvent(response);
+        return response;
     }
 
     @Override
@@ -255,7 +266,8 @@ public class RoomServiceImpl implements RoomService {
                 room.setCreator(nextCreator);
             }
             room.setStateVersion(room.getStateVersion() + 1);
-            roomRepository.save(room);
+            Room savedRoom = roomRepository.save(room);
+            publishRoomUpdatedEvent(toRoomDetailsResponse(savedRoom));
         }
 
         return new MessageResponse("Left the room successfully");
@@ -268,7 +280,11 @@ public class RoomServiceImpl implements RoomService {
         List<Room> activeOrBreakRooms = roomRepository.findAllByStatusIn(List.of(RoomStatus.ACTIVE, RoomStatus.BREAK));
         for (Room room : activeOrBreakRooms) {
             try {
+                long initialVersion = room.getStateVersion();
                 syncRoomState(room);
+                if (room.getStateVersion() > initialVersion) {
+                    publishRoomUpdatedEvent(toRoomDetailsResponse(room));
+                }
             } catch (Exception ignored) {
                 // Ignore transient scheduling errors to keep daemon running
             }
@@ -346,8 +362,18 @@ public class RoomServiceImpl implements RoomService {
         );
     }
 
+    private void publishRoomUpdatedEvent(RoomDetailsResponse roomDetails) {
+        messagingTemplate.ifPresent(template -> {
+            try {
+                template.convertAndSend("/topic/rooms/" + roomDetails.getId(), RoomUpdatedEvent.of(roomDetails));
+            } catch (Exception ignored) {
+                // Non-blocking: fail-safe event emission
+            }
+        });
+    }
+
     private String generateUniqueRoomCode() {
-        for (int attempt = 0; attempt < 50; attempt++) {
+        for (int attempts = 0; attempts < 100; attempts++) {
             StringBuilder sb = new StringBuilder(6);
             for (int i = 0; i < 6; i++) {
                 int index = SECURE_RANDOM.nextInt(ROOM_CODE_ALPHABET.length());
@@ -358,6 +384,6 @@ public class RoomServiceImpl implements RoomService {
                 return code;
             }
         }
-        throw new ConflictException("Failed to generate a unique room code. Please try again.");
+        throw new IllegalStateException("Failed to generate a unique room code after 100 attempts");
     }
 }
