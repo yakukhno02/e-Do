@@ -11,15 +11,26 @@ import { tasksApi } from '../api/tasks.api';
 import { Alert } from '../components/common/Alert';
 import { Button } from '../components/common/Button';
 import { CreateTaskModal } from '../components/tasks/CreateTaskModal';
+import { EditTaskModal } from '../components/tasks/EditTaskModal';
 import { TaskCard } from '../components/tasks/TaskCard';
+import { TaskDetailsModal } from '../components/tasks/TaskDetailsModal';
 import { TaskFilter } from '../components/tasks/TaskFilter';
-import type { TaskCreateRequest, TaskItem, TaskPriority, TaskStatus } from '../types/api';
+import type {
+  TaskCreateRequest,
+  TaskItem,
+  TaskPriority,
+  TaskStatus,
+  TaskUpdateRequest,
+} from '../types/api';
 
 export const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<TaskItem | null>(null);
+  const [selectedTaskForEdit, setSelectedTaskForEdit] = useState<TaskItem | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'ALL'>('ALL');
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | 'ALL'>('ALL');
@@ -46,7 +57,6 @@ export const TasksPage: React.FC = () => {
 
   // Handle status update (FR-14)
   const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
-    // Optimistic UI update
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     );
@@ -55,23 +65,34 @@ export const TasksPage: React.FC = () => {
       await tasksApi.updateStatus(taskId, newStatus);
     } catch (err) {
       setError(extractErrorMessage(err, 'Не вдалося оновити статус завдання'));
-      // Rollback by refreshing
       loadTasks();
     }
   };
 
-  // Handle task creation
+  // Handle task creation (FR-09)
   const handleCreateTask = async (data: TaskCreateRequest) => {
     const created = await tasksApi.createTask(data);
     setTasks((prev) => [created, ...prev]);
   };
 
-  // Handle task deletion
+  // Handle task full edit (FR-12)
+  const handleUpdateTask = async (taskId: string, data: TaskUpdateRequest) => {
+    const updated = await tasksApi.updateTask(taskId, data);
+    setTasks((prev) => prev.map((t) => (t.id === taskId ? updated : t)));
+    if (selectedTaskForDetails?.id === taskId) {
+      setSelectedTaskForDetails(updated);
+    }
+  };
+
+  // Handle task deletion (FR-13)
   const handleDeleteTask = async (taskId: string) => {
     if (!window.confirm('Ви впевнені, що хочете видалити це завдання?')) return;
     try {
       await tasksApi.deleteTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
+      if (selectedTaskForDetails?.id === taskId) {
+        setSelectedTaskForDetails(null);
+      }
     } catch (err) {
       setError(extractErrorMessage(err, 'Не вдалося видалити завдання'));
     }
@@ -110,7 +131,7 @@ export const TasksPage: React.FC = () => {
           <Button
             variant="primary"
             size="md"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => setIsCreateModalOpen(true)}
             className="shadow-md shadow-indigo-200"
           >
             <Plus className="w-4 h-4 mr-1.5" />
@@ -127,7 +148,7 @@ export const TasksPage: React.FC = () => {
         </div>
         <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-            <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+            <span className="w-2 h-2 rounded-full bg-slate-400" />
             До виконання
           </div>
           <p className="text-2xl font-black text-slate-700 mt-0.5">{todoCount}</p>
@@ -168,7 +189,7 @@ export const TasksPage: React.FC = () => {
       {/* Tasks List */}
       {isLoading && tasks.length === 0 ? (
         <div className="py-20 flex flex-col items-center justify-center text-center">
-          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-sm font-semibold text-slate-600">Завантаження ваших завдань...</p>
         </div>
       ) : tasks.length === 0 ? (
@@ -184,7 +205,7 @@ export const TasksPage: React.FC = () => {
                 : 'У вас ще немає створених завдань. Створіть перше завдання та почніть фокусуватися!'}
             </p>
           </div>
-          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+          <Button variant="primary" onClick={() => setIsCreateModalOpen(true)}>
             <Plus className="w-4 h-4 mr-1.5" />
             Створити перше завдання
           </Button>
@@ -197,6 +218,8 @@ export const TasksPage: React.FC = () => {
               task={task}
               onStatusChange={handleStatusChange}
               onDelete={handleDeleteTask}
+              onView={(t) => setSelectedTaskForDetails(t)}
+              onEdit={(t) => setSelectedTaskForEdit(t)}
             />
           ))}
         </div>
@@ -204,9 +227,26 @@ export const TasksPage: React.FC = () => {
 
       {/* Modal for creating a new task */}
       <CreateTaskModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateTask}
+      />
+
+      {/* Modal for viewing task details (FR-11) */}
+      <TaskDetailsModal
+        task={selectedTaskForDetails}
+        isOpen={!!selectedTaskForDetails}
+        onClose={() => setSelectedTaskForDetails(null)}
+        onEdit={(t) => setSelectedTaskForEdit(t)}
+        onDelete={handleDeleteTask}
+      />
+
+      {/* Modal for editing task (FR-12) */}
+      <EditTaskModal
+        task={selectedTaskForEdit}
+        isOpen={!!selectedTaskForEdit}
+        onClose={() => setSelectedTaskForEdit(null)}
+        onSubmit={handleUpdateTask}
       />
     </div>
   );

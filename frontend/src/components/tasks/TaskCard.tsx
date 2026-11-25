@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, CheckCircle2, Clock, Trash2 } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, Edit2, Eye, Trash2 } from 'lucide-react';
 import type { TaskItem, TaskStatus } from '../../types/api';
 import { formatDeadlineRelative } from '../../utils/formatters';
 import { TaskPriorityBadge, TaskStatusBadge } from '../common/Badge';
@@ -8,12 +8,16 @@ interface TaskCardProps {
   task: TaskItem;
   onStatusChange: (taskId: string, newStatus: TaskStatus) => Promise<void>;
   onDelete?: (taskId: string) => Promise<void>;
+  onView?: (task: TaskItem) => void;
+  onEdit?: (task: TaskItem) => void;
 }
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
   onStatusChange,
   onDelete,
+  onView,
+  onEdit,
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const deadlineInfo = formatDeadlineRelative(task.deadline);
@@ -36,18 +40,44 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             <TaskStatusBadge status={task.status} />
             <TaskPriorityBadge priority={task.priority} />
           </div>
-          {onDelete && (
-            <button
-              onClick={() => onDelete(task.id)}
-              className="text-slate-300 hover:text-rose-500 p-1 rounded-lg hover:bg-rose-50 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
-              title="Видалити завдання"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          )}
+
+          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+            {onView && (
+              <button
+                onClick={() => onView(task)}
+                className="text-slate-400 hover:text-indigo-600 p-1 rounded-lg hover:bg-indigo-50 transition-colors cursor-pointer"
+                title="Переглянути деталі"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+            )}
+            {onEdit && (
+              <button
+                onClick={() => onEdit(task)}
+                className="text-slate-400 hover:text-indigo-600 p-1 rounded-lg hover:bg-indigo-50 transition-colors cursor-pointer"
+                title="Редагувати завдання"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={() => onDelete(task.id)}
+                className="text-slate-400 hover:text-rose-500 p-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
+                title="Видалити завдання"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
-        <h4 className={`text-base font-bold text-slate-800 mb-1.5 leading-snug ${task.status === 'DONE' ? 'line-through text-slate-400' : ''}`}>
+        <h4
+          onClick={() => onView?.(task)}
+          className={`text-base font-bold text-slate-800 mb-1.5 leading-snug cursor-pointer hover:text-indigo-600 transition-colors ${
+            task.status === 'DONE' ? 'line-through text-slate-400' : ''
+          }`}
+        >
           {task.title}
         </h4>
 
@@ -98,11 +128,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               className={`px-2 py-1 text-[11px] font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
                 task.status === 'IN_PROGRESS'
                   ? 'bg-indigo-600 text-white shadow-xs font-semibold'
-                  : 'text-slate-500 hover:text-indigo-600'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              <Clock className="w-2.5 h-2.5" />
-              В процесі
+              <Clock className="w-3 h-3" />
+              IN PROGRESS
             </button>
             <button
               type="button"
@@ -111,11 +141,11 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               className={`px-2 py-1 text-[11px] font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
                 task.status === 'DONE'
                   ? 'bg-emerald-600 text-white shadow-xs font-semibold'
-                  : 'text-slate-500 hover:text-emerald-600'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              <CheckCircle2 className="w-2.5 h-2.5" />
-              Готово
+              <CheckCircle2 className="w-3 h-3" />
+              DONE
             </button>
           </div>
         </div>
