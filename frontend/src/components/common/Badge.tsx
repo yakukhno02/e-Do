@@ -1,5 +1,5 @@
 import React from 'react';
-import type { TaskPriority, TaskStatus } from '../../types/api';
+import type { RoomStatus, TaskPriority, TaskStatus } from '../../types/api';
 import { getPriorityLabel, getStatusLabel } from '../../utils/formatters';
 
 interface BadgeProps {
@@ -46,4 +46,15 @@ export const TaskPriorityBadge: React.FC<{ priority: TaskPriority }> = ({ priori
     HIGH: 'danger',
   };
   return <Badge variant={map[priority]}>{getPriorityLabel(priority)}</Badge>;
+};
+
+export const RoomStatusBadge: React.FC<{ status: RoomStatus }> = ({ status }) => {
+  const map: Record<RoomStatus, { variant: 'default' | 'info' | 'success' | 'warning'; label: string }> = {
+    WAITING: { variant: 'default', label: 'Очікування' },
+    ACTIVE: { variant: 'info', label: 'Фокус (Active)' },
+    BREAK: { variant: 'warning', label: 'Перерва' },
+    FINISHED: { variant: 'success', label: 'Завершено' },
+  };
+  const config = map[status] || { variant: 'default', label: status };
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 };
